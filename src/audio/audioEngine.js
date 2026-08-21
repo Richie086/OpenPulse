@@ -27,6 +27,7 @@ export class AudioEngine {
     this.volume = 0.8;
     this.playbackRate = 1.0;
     this.isMuted = false;
+    this.crossfadeDuration = 2; // Default 2 seconds crossfade
 
     this.listeners = {
       timeupdate: [],
@@ -114,17 +115,22 @@ export class AudioEngine {
     });
   }
 
+  setCrossfadeDuration(seconds) {
+    this.crossfadeDuration = Math.max(0, Math.min(10, seconds));
+  }
+
   async loadTrack(track) {
     this.initAudioContext();
     this.currentTrack = track;
 
+    let src = track.url;
     if (track.fileData) {
-      // Blob from local upload / IndexedDB
-      this.audio.src = URL.createObjectURL(track.fileData);
-    } else if (track.url) {
-      this.audio.src = track.url;
+      src = URL.createObjectURL(track.fileData);
+    } else if (typeof track === 'string') {
+      src = track;
     }
 
+    this.audio.src = src;
     this.audio.playbackRate = this.playbackRate;
     this.emit('trackchange', track);
   }
@@ -140,6 +146,11 @@ export class AudioEngine {
     }
 
     try {
+      if (this.gainNode && this.crossfadeDuration > 0) {
+        const now = this.audioCtx.currentTime;
+        this.gainNode.gain.setValueAtTime(0, now);
+        this.gainNode.gain.linearRampToValueAtTime(this.volume, now + this.crossfadeDuration);
+      }
       await this.audio.play();
       this.isPlaying = true;
     } catch (err) {
@@ -148,8 +159,18 @@ export class AudioEngine {
   }
 
   pause() {
-    this.audio.pause();
-    this.isPlaying = false;
+    if (this.gainNode && this.crossfadeDuration > 0 && this.audioCtx) {
+      const now = this.audioCtx.currentTime;
+      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+      this.gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
+      setTimeout(() => {
+        this.audio.pause();
+        this.isPlaying = false;
+      }, 500);
+    } else {
+      this.audio.pause();
+      this.isPlaying = false;
+    }
   }
 
   stop() {
@@ -181,29 +202,26 @@ export class AudioEngine {
     }
   }
 
-  toggleMute() {
-    this.isMuted = !this.isMuted;
-    this.audio.muted = this.isMuted;
-    return this.isMuted;
-  }
-
-  setSpeed(rate) {
-    this.playbackRate = rate;
-    this.audio.playbackRate = rate;
-  }
-
-  setEQBand(index, gainValue) {
+  setBandGain(index, gainValue) {
     if (this.eqFilters[index]) {
       this.eqFilters[index].gain.value = gainValue;
     }
   }
 
-  applyEQPreset(presetName) {
+  applyPreset(presetName) {
     const preset = EQ_PRESETS[presetName] || EQ_PRESETS.flat;
     preset.forEach((gain, idx) => {
-      this.setEQBand(idx, gain);
+      this.setBandGain(idx, gain);
     });
     return preset;
+  }
+
+  onTimeUpdate(callback) {
+    this.on('timeupdate', (data) => callback(data.currentTime, data.duration));
+  }
+
+  onEnded(callback) {
+    this.on('ended', callback);
   }
 
   on(event, callback) {
