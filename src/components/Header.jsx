@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Disc3, Search, PlusCircle, Sliders, Palette } from 'lucide-react';
+import { Disc3, Search, PlusCircle, Sliders, Palette, Server } from 'lucide-react';
 
 export function Header({
   searchQuery,
   onSearchChange,
   onOpenIngest,
+  onOpenSubsonic,
   onToggleEQ,
   onToggleSkinStudio
 }) {
@@ -30,9 +31,12 @@ export function Header({
       </div>
 
       <div className="header-actions">
-        <Button onClick={onOpenIngest} className="btn-primary gap-2">
+        <Button onClick={onOpenIngest} className="btn-primary gap-2 text-xs">
           <PlusCircle className="w-4 h-4" />
           <span>Add Music</span>
+        </Button>
+        <Button variant="outline" size="icon" onClick={onOpenSubsonic} title="Subsonic / Navidrome Sync" className="btn-icon">
+          <Server className="w-4 h-4" />
         </Button>
         <Button variant="outline" size="icon" onClick={onToggleEQ} title="10-Band Equalizer" className="btn-icon">
           <Sliders className="w-4 h-4" />

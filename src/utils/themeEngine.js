@@ -4,7 +4,7 @@ export const THEME_PRESETS = [
   { id: 'obsidian', name: 'Obsidian Glass', primary: '#6366f1', accent: '#06b6d4', dots: ['#6366f1', '#06b6d4', '#121624'] },
   { id: 'cyberpunk', name: 'Cyberpunk 1984', primary: '#ff007f', accent: '#00f0ff', dots: ['#ff007f', '#00f0ff', '#1a092d'] },
   { id: 'oled', name: 'OLED Midnight', primary: '#10b981', accent: '#3b82f6', dots: ['#10b981', '#3b82f6', '#000000'] },
-  { id: 'nordic', name: 'Nordic Aurora', primary: '#14b8a6', accent: '#38bdf8', dots: ['#14b8a6', '#a855f7', '#071318'] },
+  { id: 'nordic', name: 'Nordic Aurora', primary: '#14b8a6', accent: '#38bdf8', dots: ['#14b8a6', '#38bdf8', '#071318'] },
   { id: 'retro', name: 'Retro Winamp', primary: '#00ff41', accent: '#ffb703', dots: ['#00ff41', '#ffb703', '#20232a'] }
 ];
 
@@ -16,6 +16,24 @@ export class ThemeEngine {
   setTheme(themeId) {
     this.currentTheme = themeId;
     document.documentElement.setAttribute('data-theme', themeId);
+    this.resetThemeToPreset();
+  }
+
+  applyCustomTheme(colors) {
+    if (!colors) return;
+    if (colors.primary) {
+      document.documentElement.style.setProperty('--primary', colors.primary);
+      document.documentElement.style.setProperty('--primary-glow', colors.primary + '80');
+    }
+    if (colors.bgApp) {
+      document.documentElement.style.setProperty('--bg-app', colors.bgApp);
+    }
+    if (colors.bgSurface) {
+      document.documentElement.style.setProperty('--bg-surface', colors.bgSurface);
+    }
+    if (colors.textMain) {
+      document.documentElement.style.setProperty('--text-main', colors.textMain);
+    }
   }
 
   // Dynamic accent color tinting based on album cover image
@@ -51,9 +69,20 @@ export class ThemeEngine {
     }
   }
 
+  applyDynamicAccentFromImage(srcUrl) {
+    if (!srcUrl) return;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => this.extractAccentFromImage(img);
+    img.src = srcUrl;
+  }
+
   resetThemeToPreset() {
     document.documentElement.style.removeProperty('--primary');
     document.documentElement.style.removeProperty('--primary-glow');
+    document.documentElement.style.removeProperty('--bg-app');
+    document.documentElement.style.removeProperty('--bg-surface');
+    document.documentElement.style.removeProperty('--text-main');
   }
 }
 

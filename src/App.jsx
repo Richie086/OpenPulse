@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { PlayerBar } from '@/components/PlayerBar';
@@ -7,6 +7,7 @@ import { TrackList } from '@/components/TrackList';
 import { EqualizerDrawer } from '@/components/EqualizerDrawer';
 import { SkinStudioDrawer } from '@/components/SkinStudioDrawer';
 import { AddMusicModal } from '@/components/AddMusicModal';
+import { SubsonicModal } from '@/components/SubsonicModal';
 
 import { AudioEngine } from '@/audio/audioEngine';
 import { AudioVisualizer as VisualizerEngine } from '@/audio/visualizer';
@@ -45,6 +46,7 @@ export function App() {
   const [isEQOpen, setIsEQOpen] = useState(false);
   const [isSkinOpen, setIsSkinOpen] = useState(false);
   const [isIngestOpen, setIsIngestOpen] = useState(false);
+  const [isSubsonicOpen, setIsSubsonicOpen] = useState(false);
   const [eqGains, setEqGains] = useState(Array(10).fill(0));
   const [activePreset, setActivePreset] = useState('flat');
 
@@ -226,6 +228,14 @@ export function App() {
     setTracks(updated);
   };
 
+  const handleSyncSubsonicSongs = async (newSongs) => {
+    for (const song of newSongs) {
+      await db.addTrack(song);
+    }
+    const updated = await db.getAllTracks();
+    setTracks(updated);
+  };
+
   const handleToggleFavorite = async (trackId) => {
     const updated = tracks.map((t) => (t.id === trackId ? { ...t, isFavorite: !t.isFavorite } : t));
     setTracks(updated);
@@ -268,6 +278,7 @@ export function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onOpenIngest={() => setIsIngestOpen(true)}
+        onOpenSubsonic={() => setIsSubsonicOpen(true)}
         onToggleEQ={() => setIsEQOpen(!isEQOpen)}
         onToggleSkinStudio={() => setIsSkinOpen(!isSkinOpen)}
       />
@@ -379,6 +390,12 @@ export function App() {
         onClose={() => setIsIngestOpen(false)}
         onAddFiles={handleAddFiles}
         onAddStreamUrl={handleAddStreamUrl}
+      />
+
+      <SubsonicModal
+        isOpen={isSubsonicOpen}
+        onClose={() => setIsSubsonicOpen(false)}
+        onSyncSongs={handleSyncSubsonicSongs}
       />
     </div>
   );
