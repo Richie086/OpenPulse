@@ -263,7 +263,7 @@ export function App() {
   };
 
   return (
-    <div id="app">
+    <div className="app-shell flex flex-col h-screen w-screen overflow-hidden relative">
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
