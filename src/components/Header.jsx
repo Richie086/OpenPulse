@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Disc3, Search, PlusCircle, Sliders, Palette, Server, Mic2 } from 'lucide-react';
+import { Disc3, Search, PlusCircle, Sliders, Palette, Server, Mic2, Keyboard } from 'lucide-react';
 
 export function Header({
   searchQuery,
@@ -9,7 +9,8 @@ export function Header({
   onOpenSubsonic,
   onToggleEQ,
   onToggleSkinStudio,
-  onToggleLyrics
+  onToggleLyrics,
+  onOpenShortcuts
 }) {
   return (
     <header className="top-header">
@@ -47,6 +48,9 @@ export function Header({
         </Button>
         <Button variant="outline" size="icon" onClick={onToggleSkinStudio} title="Skins & Themes Studio" className="btn-icon">
           <Palette className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={onOpenShortcuts} title="Keyboard Shortcuts" className="btn-icon">
+          <Keyboard className="w-4 h-4" />
         </Button>
       </div>
     </header>
