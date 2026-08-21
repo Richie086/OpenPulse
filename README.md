@@ -64,26 +64,21 @@ The web player will be served on port `8080` at `http://your-server-ip:8080`.
 ```
 OpenPulse/
 ├── index.html              # Main HTML5 UI Shell & Modals
-├── styles/
-│   ├── index.css           # Glassmorphism Layout & Animations
-│   └── themes.css          # CSS Variables & Skin Palette Definitions
+├── docs/                   # Architectural & Project Documentation
+│   ├── IMPLEMENTATION.md   # Web Audio Engine & Visualizer Spec
+│   ├── ROADMAP.md          # Release Phases & Feature Goals
+│   ├── MILESTONES.md       # Delivery Tracker & Deliverables
+│   └── DECISIONS.md        # Architectural Decision Records (ADRs)
 ├── src/
-│   ├── audio/
-│   │   ├── audioEngine.js  # Web Audio API Engine & 10-Band EQ
-│   │   └── visualizer.js   # Canvas 2D Audio Visualizer Renderer
-│   ├── db/
-│   │   └── indexedDB.js    # IndexedDB Local Track & Playlist Store
-│   ├── services/
-│   │   └── cloudConnectors.js # Cloud Streams & WebDAV Integration
-│   ├── ui/
-│   │   ├── playlistManager.js # Playlist & M3U Export Logic
-│   │   └── queueManager.js    # Queue, Shuffle, & Repeat Handler
-│   ├── utils/
-│   │   ├── tagParser.js    # ID3 & Cover Art Metadata Reader
-│   │   ├── themeEngine.js  # Theme Switcher & Color Extraction
-│   │   └── sampleAudio.js  # Pre-loaded Demo Audio Tracks
-│   └── main.js             # Application Entry & Event Wiring
-├── Dockerfile              # Production Nginx Docker Container
+│   ├── audio/              # Web Audio API Engine & Canvas Visualizers
+│   ├── components/ui/      # shadcn UI React / Component Library
+│   ├── db/                 # IndexedDB Store Manager
+│   ├── services/           # Cloud Stream & WebDAV Integration
+│   ├── styles/             # Global CSS Variables & Skin Palette Definitions
+│   ├── ui/                 # Playlist & Queue Managers
+│   ├── utils/              # Metadata Parser & Theme Switcher
+│   └── main.js             # Application Orchestrator
+├── Dockerfile              # Production Nginx Container Configuration
 └── docker-compose.yml      # Multi-container orchestration
 ```
 
@@ -91,10 +86,10 @@ OpenPulse/
 
 ## 📖 Comprehensive Documentation
 
-- 📘 [Implementation Details](IMPLEMENTATION.md) — Technical architecture & Web Audio pipeline details.
-- 🗺️ [Project Roadmap](ROADMAP.md) — Feature milestones and release versions.
-- 🎯 [Milestones](MILESTONES.md) — Progress tracking and target deliverables.
-- 📐 [Architectural Decisions (ADRs)](DECISIONS.md) — Rationale behind design and technology choices.
+- 📘 [Implementation Details](docs/IMPLEMENTATION.md) — Technical architecture & Web Audio pipeline details.
+- 🗺️ [Project Roadmap](docs/ROADMAP.md) — Feature milestones and release versions.
+- 🎯 [Milestones](docs/MILESTONES.md) — Progress tracking and target deliverables.
+- 📐 [Architectural Decisions (ADRs)](docs/DECISIONS.md) — Rationale behind design and technology choices.
 
 ---
 
