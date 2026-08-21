@@ -1,0 +1,142 @@
+/* SonicPulse - Theme Engine Definitions */
+
+:root {
+  /* Default Theme: Obsidian Glass */
+  --bg-app: #0b0d14;
+  --bg-surface: rgba(18, 22, 36, 0.7);
+  --bg-surface-solid: #121624;
+  --bg-surface-hover: rgba(30, 37, 58, 0.8);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-glass-card: rgba(255, 255, 255, 0.05);
+  
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-glow: rgba(99, 102, 241, 0.4);
+  --accent: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.4);
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(99, 102, 241, 0.5);
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  --glass-blur: 16px;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+  
+  --font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+/* ⚡ Cyberpunk 1984 Skin */
+[data-theme="cyberpunk"] {
+  --bg-app: #0d021a;
+  --bg-surface: rgba(26, 9, 45, 0.75);
+  --bg-surface-solid: #1a092d;
+  --bg-surface-hover: rgba(48, 17, 82, 0.8);
+  --bg-glass: rgba(255, 0, 127, 0.05);
+  --bg-glass-card: rgba(255, 0, 127, 0.08);
+  
+  --primary: #ff007f;
+  --primary-hover: #e00070;
+  --primary-glow: rgba(255, 0, 127, 0.5);
+  --accent: #00f0ff;
+  --accent-glow: rgba(0, 240, 255, 0.5);
+  
+  --text-main: #ffffff;
+  --text-muted: #d8b4fe;
+  --text-dim: #9333ea;
+  
+  --border-color: rgba(255, 0, 127, 0.2);
+  --border-active: rgba(0, 240, 255, 0.7);
+  
+  --accent-gradient: linear-gradient(135deg, #ff007f 0%, #00f0ff 100%);
+  --shadow-glow: 0 0 30px rgba(255, 0, 127, 0.4);
+}
+
+/* ⬛ OLED Midnight Skin */
+[data-theme="oled"] {
+  --bg-app: #000000;
+  --bg-surface: rgba(12, 12, 14, 0.9);
+  --bg-surface-solid: #0c0c0e;
+  --bg-surface-hover: rgba(24, 24, 28, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.02);
+  --bg-glass-card: rgba(255, 255, 255, 0.04);
+  
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-glow: rgba(16, 185, 129, 0.4);
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.4);
+  
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-dim: #52525b;
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-active: rgba(16, 185, 129, 0.6);
+  
+  --accent-gradient: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* 🌲 Nordic Aurora Skin */
+[data-theme="nordic"] {
+  --bg-app: #071318;
+  --bg-surface: rgba(14, 34, 42, 0.75);
+  --bg-surface-solid: #0e222a;
+  --bg-surface-hover: rgba(23, 50, 61, 0.85);
+  --bg-glass: rgba(20, 184, 166, 0.05);
+  --bg-glass-card: rgba(20, 184, 166, 0.08);
+  
+  --primary: #14b8a6;
+  --primary-hover: #0d9488;
+  --primary-glow: rgba(20, 184, 166, 0.4);
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.4);
+  
+  --text-main: #f0fdfa;
+  --text-muted: #99f6e4;
+  --text-dim: #5eead4;
+  
+  --border-color: rgba(20, 184, 166, 0.15);
+  --border-active: rgba(56, 189, 248, 0.6);
+  
+  --accent-gradient: linear-gradient(135deg, #14b8a6 0%, #a855f7 100%);
+  --shadow-glow: 0 0 25px rgba(20, 184, 166, 0.3);
+}
+
+/* 📻 Retro Winamp / Hi-Fi Skin */
+[data-theme="retro"] {
+  --bg-app: #18191c;
+  --bg-surface: rgba(32, 35, 42, 0.95);
+  --bg-surface-solid: #20232a;
+  --bg-surface-hover: rgba(45, 49, 58, 1);
+  --bg-glass: rgba(0, 255, 65, 0.03);
+  --bg-glass-card: rgba(40, 44, 52, 0.9);
+  
+  --primary: #00ff41;
+  --primary-hover: #00cc33;
+  --primary-glow: rgba(0, 255, 65, 0.5);
+  --accent: #ffb703;
+  --accent-glow: rgba(255, 183, 3, 0.5);
+  
+  --text-main: #00ff41;
+  --text-muted: #88aa99;
+  --text-dim: #446655;
+  
+  --border-color: rgba(0, 255, 65, 0.25);
+  --border-active: rgba(0, 255, 65, 0.8);
+  
+  --accent-gradient: linear-gradient(135deg, #00ff41 0%, #ffb703 100%);
+  --shadow-glow: 0 0 15px rgba(0, 255, 65, 0.3);
+  
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+}

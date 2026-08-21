@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  sonicpulse:
+    build: .
+    container_name: sonicpulse_audio
+    ports:
+      - "8080:80"
+    restart: unless-stopped

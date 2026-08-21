@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="obsidian">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SonicPulse - Modern Self-Hostable Audio Player</title>
+  <meta name="description" content="A sleek, modern, skinable self-hostable web audio player with audio visualizer, local & cloud music integration, and equalizer.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles/index.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand">
+        <div class="brand-icon-wrapper">
+          <i data-lucide="disc-3"></i>
+        </div>
+        <span>SonicPulse</span>
+      </div>
+
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search tracks, artists, albums..." autocomplete="off">
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btnOpenIngestModal">
+          <i data-lucide="plus-circle"></i>
+          <span>Add Music</span>
+        </button>
+        <button class="btn btn-icon" id="btnToggleEQ" title="10-Band Equalizer">
+          <i data-lucide="sliders"></i>
+        </button>
+        <button class="btn btn-icon" id="btnToggleSkinStudio" title="Skins & Themes Studio">
+          <i data-lucide="palette"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div>
+          <div class="nav-section-title">Library</div>
+          <ul class="nav-menu">
+            <li class="nav-item active" data-view="all-tracks">
+              <i data-lucide="music"></i>
+              <span>All Tracks</span>
+            </li>
+            <li class="nav-item" data-view="favorites">
+              <i data-lucide="heart"></i>
+              <span>Favorites</span>
+            </li>
+            <li class="nav-item" data-view="albums">
+              <i data-lucide="disc"></i>
+              <span>Albums</span>
+            </li>
+            <li class="nav-item" data-view="cloud">
+              <i data-lucide="cloud"></i>
+              <span>Cloud Streams</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="nav-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Playlists</span>
+            <i data-lucide="plus" id="btnNewPlaylist" style="cursor: pointer;" title="Create Playlist"></i>
+          </div>
+          <ul class="nav-menu" id="playlistListMenu">
+            <!-- Dynamic playlist menu items -->
+          </ul>
+        </div>
+
+        <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-color);">
+          <div class="nav-item" id="btnSelfHostInfo">
+            <i data-lucide="server"></i>
+            <span>Self-Hosting Ready</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content Area -->
+      <main class="content-area">
+        <!-- Audio Visualizer Stage Canvas -->
+        <div class="visualizer-container">
+          <canvas id="visualizerCanvas"></canvas>
+          <div class="visualizer-overlay-controls">
+            <span class="badge">Visualizer:</span>
+            <button class="btn btn-icon" id="btnVisBars" title="Spectrum Bars"><i data-lucide="bar-chart-2"></i></button>
+            <button class="btn btn-icon" id="btnVisWave" title="Oscilloscope Waveform"><i data-lucide="activity"></i></button>
+            <button class="btn btn-icon" id="btnVisRadial" title="Radial Pulse"><i data-lucide="sun"></i></button>
+            <button class="btn btn-icon" id="btnVisParticles" title="Cosmic Starfield"><i data-lucide="sparkles"></i></button>
+          </div>
+        </div>
+
+        <!-- View Header -->
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1 id="viewTitle">All Tracks</h1>
+            <p class="view-subtitle" id="viewSubtitle">3 tracks in library</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn" id="btnPlayAll">
+              <i data-lucide="play"></i>
+              <span>Play All</span>
+            </button>
+            <button class="btn" id="btnShuffleAll">
+              <i data-lucide="shuffle"></i>
+              <span>Shuffle</span>
+            </button>
+            <button class="btn btn-icon" id="btnExportM3U" title="Export M3U Playlist">
+              <i data-lucide="download"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Track Table -->
+        <div class="track-table-container">
+          <table class="track-table">
+            <thead>
+              <tr>
+                <th style="width: 48px;">#</th>
+                <th>Title & Artist</th>
+                <th>Album</th>
+                <th style="width: 100px;">Duration</th>
+                <th style="width: 100px; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trackTableBody">
+              <!-- Tracks rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bottom Fixed Player Control Bar -->
+    <footer class="player-bar">
+      <!-- Player Left: Track Details -->
+      <div class="now-playing-cell">
+        <div class="now-playing-cover" id="npCoverWrapper">
+          <img id="npCoverImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%2364748b'><rect width='100' height='100'/></svg>" alt="Album Cover">
+        </div>
+        <div class="now-playing-details">
+          <div class="now-playing-title" id="npTitle">No track selected</div>
+          <div class="now-playing-artist" id="npArtist">Select a song to play</div>
+        </div>
+        <button class="control-btn" id="npHeartBtn" title="Favorite">
+          <i data-lucide="heart"></i>
+        </button>
+      </div>
+
+      <!-- Player Center: Transport Controls & Timeline Scrub Bar -->
+      <div class="player-controls-group">
+        <div class="transport-buttons">
+          <button class="control-btn" id="btnShuffle" title="Toggle Shuffle">
+            <i data-lucide="shuffle"></i>
+          </button>
+          <button class="control-btn" id="btnRewind" title="Rewind 10s">
+            <i data-lucide="rotate-ccw"></i>
+          </button>
+          <button class="control-btn" id="btnPrev" title="Previous Track">
+            <i data-lucide="skip-back"></i>
+          </button>
+
+          <button class="control-btn control-btn-play" id="btnPlayPause" title="Play / Pause">
+            <i data-lucide="play"></i>
+          </button>
+
+          <button class="control-btn" id="btnStop" title="Stop">
+            <i data-lucide="square"></i>
+          </button>
+          <button class="control-btn" id="btnNext" title="Next Track">
+            <i data-lucide="skip-forward"></i>
+          </button>
+          <button class="control-btn" id="btnFastForward" title="Fast-Forward 10s">
+            <i data-lucide="rotate-cw"></i>
+          </button>
+          <button class="control-btn" id="btnRepeat" title="Toggle Repeat">
+            <i data-lucide="repeat"></i>
+          </button>
+        </div>
+
+        <div class="timeline-container">
+          <span id="currTimeText">0:00</span>
+          <input type="range" id="seekSlider" class="slider-range" min="0" max="100" value="0" step="0.1">
+          <span id="durTimeText">0:00</span>
+        </div>
+      </div>
+
+      <!-- Player Right: Volume & Utilities -->
+      <div class="player-utilities-group">
+        <button class="control-btn" id="btnSpeedToggle" title="Playback Speed">1.0x</button>
+        <div class="volume-slider-wrapper">
+          <button class="control-btn" id="btnMuteToggle" title="Mute/Unmute">
+            <i data-lucide="volume-2"></i>
+          </button>
+          <input type="range" id="volumeSlider" class="slider-range" min="0" max="1" value="0.8" step="0.01">
+        </div>
+      </div>
+    </footer>
+
+    <!-- 10-Band Equalizer Drawer -->
+    <div class="drawer" id="eqDrawer">
+      <div class="drawer-header">
+        <div class="drawer-title">10-Band Equalizer</div>
+        <button class="btn btn-icon" id="btnCloseEQ"><i data-lucide="x"></i></button>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Presets:</label>
+        <select id="eqPresetSelect" class="btn" style="width: 100%; text-align: left;">
+          <option value="flat">Flat (Default)</option>
+          <option value="bassBoost">Bass Boost</option>
+          <option value="vocal">Vocal Booster</option>
+          <option value="electronic">Electronic / Dance</option>
+          <option value="rock">Rock</option>
+          <option value="pop">Pop</option>
+        </select>
+      </div>
+
+      <div class="eq-container">
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="0" min="-12" max="12" value="0" step="0.5"><span class="eq-label">31Hz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="1" min="-12" max="12" value="0" step="0.5"><span class="eq-label">62Hz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="2" min="-12" max="12" value="0" step="0.5"><span class="eq-label">125Hz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="3" min="-12" max="12" value="0" step="0.5"><span class="eq-label">250Hz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="4" min="-12" max="12" value="0" step="0.5"><span class="eq-label">500Hz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="5" min="-12" max="12" value="0" step="0.5"><span class="eq-label">1kHz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="6" min="-12" max="12" value="0" step="0.5"><span class="eq-label">2kHz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="7" min="-12" max="12" value="0" step="0.5"><span class="eq-label">4kHz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="8" min="-12" max="12" value="0" step="0.5"><span class="eq-label">8kHz</span></div>
+        <div class="eq-band"><input type="range" class="eq-slider" data-band="9" min="-12" max="12" value="0" step="0.5"><span class="eq-label">16kHz</span></div>
+      </div>
+    </div>
+
+    <!-- Skins & Theme Studio Drawer -->
+    <div class="drawer" id="skinDrawer">
+      <div class="drawer-header">
+        <div class="drawer-title">Skins & Theme Engine</div>
+        <button class="btn btn-icon" id="btnCloseSkinStudio"><i data-lucide="x"></i></button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Choose a sleek preset theme for SonicPulse:</p>
+      
+      <div class="theme-grid">
+        <div class="theme-card active" data-theme-id="obsidian">
+          <div class="theme-preview-dots">
+            <div class="theme-dot" style="background: #6366f1;"></div>
+            <div class="theme-dot" style="background: #06b6d4;"></div>
+            <div class="theme-dot" style="background: #121624;"></div>
+          </div>
+          <span style="font-weight: 600; font-size: 0.88rem;">Obsidian Glass</span>
+        </div>
+
+        <div class="theme-card" data-theme-id="cyberpunk">
+          <div class="theme-preview-dots">
+            <div class="theme-dot" style="background: #ff007f;"></div>
+            <div class="theme-dot" style="background: #00f0ff;"></div>
+            <div class="theme-dot" style="background: #1a092d;"></div>
+          </div>
+          <span style="font-weight: 600; font-size: 0.88rem;">Cyberpunk 1984</span>
+        </div>
+
+        <div class="theme-card" data-theme-id="oled">
+          <div class="theme-preview-dots">
+            <div class="theme-dot" style="background: #10b981;"></div>
+            <div class="theme-dot" style="background: #3b82f6;"></div>
+            <div class="theme-dot" style="background: #000000;"></div>
+          </div>
+          <span style="font-weight: 600; font-size: 0.88rem;">OLED Midnight</span>
+        </div>
+
+        <div class="theme-card" data-theme-id="nordic">
+          <div class="theme-preview-dots">
+            <div class="theme-dot" style="background: #14b8a6;"></div>
+            <div class="theme-dot" style="background: #38bdf8;"></div>
+            <div class="theme-dot" style="background: #071318;"></div>
+          </div>
+          <span style="font-weight: 600; font-size: 0.88rem;">Nordic Aurora</span>
+        </div>
+
+        <div class="theme-card" data-theme-id="retro">
+          <div class="theme-preview-dots">
+            <div class="theme-dot" style="background: #00ff41;"></div>
+            <div class="theme-dot" style="background: #ffb703;"></div>
+            <div class="theme-dot" style="background: #20232a;"></div>
+          </div>
+          <span style="font-weight: 600; font-size: 0.88rem;">Retro Winamp</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Music & Cloud Ingest Modal -->
+    <div class="modal-overlay" id="ingestModal">
+      <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="font-size: 1.3rem;">Add Music / Cloud Integration</h2>
+          <button class="btn btn-icon" id="btnCloseIngestModal"><i data-lucide="x"></i></button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dropzone -->
+          <div id="dropzone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 30px; text-align: center; background: var(--bg-glass-card); cursor: pointer; transition: all 0.2s ease;">
+            <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 8px;"></i>
+            <p style="font-weight: 600;">Drag & Drop Audio Files / Folders Here</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Supports MP3, FLAC, OGG, WAV audio files</p>
+            <input type="file" id="fileInput" multiple accept="audio/*" style="display: none;">
+          </div>
+
+          <!-- URL Stream Ingestion -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px;">Attach Stream URL / Cloud Music Link:</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="streamUrlInput" placeholder="https://example.com/audio-stream.mp3" class="search-box input" style="width: 100%; padding-left: 12px;">
+              <button class="btn btn-primary" id="btnAddStreamUrl">Attach</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
