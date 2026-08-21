@@ -1,11 +1,15 @@
 import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export function SystemStatusCard() {
   return (
-    <div className="mt-auto bg-slate-900/90 border border-white/10 rounded-xl p-3 backdrop-blur-md">
-      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">SYSTEM STATUS</div>
-
-      <div className="flex flex-col gap-1.5 text-xs">
+    <Card size="sm" className="mt-auto bg-slate-900/90 border-white/10 backdrop-blur-md">
+      <CardHeader className="p-3 pb-1">
+        <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          SYSTEM STATUS
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-3 pt-0 flex flex-col gap-1.5 text-xs">
         <div className="flex justify-between items-center">
           <span className="text-slate-400 font-mono text-[11px]">CONTAINER:</span>
           <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
@@ -22,7 +26,7 @@ export function SystemStatusCard() {
           <span className="text-slate-400 font-mono text-[11px]">UPTIME:</span>
           <span className="text-slate-200 font-mono text-[11px]">14h 23m</span>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
