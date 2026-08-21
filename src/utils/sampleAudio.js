@@ -35,3 +35,5 @@ export const SAMPLE_TRACKS = [
     addedAt: Date.now() - 200000
   }
 ];
+
+export const sampleTracks = SAMPLE_TRACKS;

@@ -2,6 +2,23 @@
 
 import { savePlaylistToDB, getAllPlaylistsFromDB, deletePlaylistFromDB } from '../db/indexedDB.js';
 
+export function exportM3U(tracks, name = 'Playlist') {
+  if (!tracks || tracks.length === 0) return;
+
+  let m3uContent = '#EXTM3U\n';
+  tracks.forEach((t) => {
+    m3uContent += `#EXTINF:${Math.floor(t.duration || 0)},${t.artist || 'Unknown'} - ${t.title || 'Untitled'}\n${t.url || t.id}\n`;
+  });
+
+  const blob = new Blob([m3uContent], { type: 'audio/x-mpegurl' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name.replace(/\s+/g, '_')}.m3u`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export class PlaylistManager {
   constructor() {
     this.playlists = [];
@@ -77,19 +94,7 @@ export class PlaylistManager {
     if (!pl) return;
 
     const tracksInPl = allTracks.filter(t => pl.trackIds.includes(t.id));
-    let m3uContent = '#EXTM3U\n';
-
-    tracksInPl.forEach(t => {
-      m3uContent += `#EXTINF:${t.duration || 0},${t.artist} - ${t.title}\n${t.url || t.id}\n`;
-    });
-
-    const blob = new Blob([m3uContent], { type: 'audio/x-mpegurl' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${pl.name.replace(/\s+/g, '_')}.m3u`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportM3U(tracksInPl, pl.name);
   }
 }
 

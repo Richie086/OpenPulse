@@ -135,3 +135,36 @@ export async function getSettingFromDB(key, defaultValue = null) {
     req.onerror = () => resolve(defaultValue);
   });
 }
+
+export class IndexedDBManager {
+  async init() {
+    return initDB();
+  }
+  async getAllTracks() {
+    return getAllTracksFromDB();
+  }
+  async addTrack(track) {
+    return saveTrackToDB(track);
+  }
+  async updateTrack(track) {
+    return saveTrackToDB(track);
+  }
+  async deleteTrack(id) {
+    return deleteTrackFromDB(id);
+  }
+  async getAllPlaylists() {
+    return getAllPlaylistsFromDB();
+  }
+  async addPlaylist(pl) {
+    return savePlaylistToDB(pl);
+  }
+  async deletePlaylist(id) {
+    return deletePlaylistFromDB(id);
+  }
+  async getSetting(key, def) {
+    return getSettingFromDB(key, def);
+  }
+  async setSetting(key, val) {
+    return setSettingInDB(key, val);
+  }
+}
