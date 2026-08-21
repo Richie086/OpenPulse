@@ -9,6 +9,7 @@ import { SkinStudioDrawer } from '@/components/SkinStudioDrawer';
 import { AddMusicModal } from '@/components/AddMusicModal';
 import { SubsonicModal } from '@/components/SubsonicModal';
 import { LyricsDrawer } from '@/components/LyricsDrawer';
+import { ShortcutModal } from '@/components/ShortcutModal';
 import { DashboardView } from '@/components/DashboardView';
 
 import { AudioEngine } from '@/audio/audioEngine';
@@ -18,6 +19,7 @@ import { parseAudioMetadata } from '@/utils/tagParser';
 import { themeEngine } from '@/utils/themeEngine';
 import { sampleTracks } from '@/utils/sampleAudio';
 import { exportM3U } from '@/ui/playlistManager';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Play, Shuffle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -50,8 +52,21 @@ export function App() {
   const [isIngestOpen, setIsIngestOpen] = useState(false);
   const [isSubsonicOpen, setIsSubsonicOpen] = useState(false);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [eqGains, setEqGains] = useState(Array(10).fill(0));
   const [activePreset, setActivePreset] = useState('flat');
+
+  // Register Keyboard Shortcuts
+  useKeyboardShortcuts({
+    onTogglePlay: () => handleTogglePlay(),
+    onNext: () => handleNextTrack(),
+    onPrev: () => handlePrevTrack(),
+    onVolumeUp: () => handleVolumeChange(Math.min(1, volume + 0.1)),
+    onVolumeDown: () => handleVolumeChange(Math.max(0, volume - 0.1)),
+    onToggleMute: () => handleToggleMute(),
+    onToggleEQ: () => setIsEQOpen((prev) => !prev),
+    onToggleLyrics: () => setIsLyricsOpen((prev) => !prev)
+  });
 
   // Initialize DB & Visualizer
   useEffect(() => {
@@ -285,6 +300,7 @@ export function App() {
         onToggleLyrics={() => setIsLyricsOpen(!isLyricsOpen)}
         onToggleEQ={() => setIsEQOpen(!isEQOpen)}
         onToggleSkinStudio={() => setIsSkinOpen(!isSkinOpen)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       <div className="main-container">
@@ -427,6 +443,11 @@ export function App() {
         onClose={() => setIsLyricsOpen(false)}
         currentTrack={currentTrack}
         currentTime={currentTime}
+      />
+
+      <ShortcutModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </div>
   );
