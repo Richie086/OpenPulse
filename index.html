@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenPulse - Modern Self-Hostable Audio Player</title>
   <meta name="description" content="A sleek, modern, skinable self-hostable web audio player with audio visualizer, local & cloud music integration, and equalizer.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6366f1">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,5 +16,14 @@
 <body>
   <div id="app"></div>
   <script type="module" src="./src/main.jsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) => {
+          console.warn('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
