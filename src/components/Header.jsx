@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Disc3, Search, PlusCircle, Sliders, Palette, Server } from 'lucide-react';
+import { Disc3, Search, PlusCircle, Sliders, Palette, Server, Mic2 } from 'lucide-react';
 
 export function Header({
   searchQuery,
@@ -8,7 +8,8 @@ export function Header({
   onOpenIngest,
   onOpenSubsonic,
   onToggleEQ,
-  onToggleSkinStudio
+  onToggleSkinStudio,
+  onToggleLyrics
 }) {
   return (
     <header className="top-header">
@@ -37,6 +38,9 @@ export function Header({
         </Button>
         <Button variant="outline" size="icon" onClick={onOpenSubsonic} title="Subsonic / Navidrome Sync" className="btn-icon">
           <Server className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={onToggleLyrics} title="Synced Lyrics Viewer" className="btn-icon">
+          <Mic2 className="w-4 h-4" />
         </Button>
         <Button variant="outline" size="icon" onClick={onToggleEQ} title="10-Band Equalizer" className="btn-icon">
           <Sliders className="w-4 h-4" />
