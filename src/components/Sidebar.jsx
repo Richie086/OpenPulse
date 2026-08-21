@@ -1,7 +1,8 @@
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Music, Server, Settings, FileText, Heart, Plus, ListMusic } from 'lucide-react';
+import { LayoutDashboard, Music, Server, Settings, FileText, Plus, ListMusic } from 'lucide-react';
 import { SystemStatusCard } from '@/components/SystemStatusCard';
+import { PlaylistCombobox } from '@/components/PlaylistCombobox';
 
 export function Sidebar({
   activeView,
@@ -77,7 +78,8 @@ export function Sidebar({
 
         <Separator className="bg-white/10" />
 
-        <div>
+        {/* Playlist Section with Shadcn Combobox */}
+        <div className="flex flex-col gap-3">
           <div className="nav-section-title flex justify-between items-center text-[10px] uppercase font-bold text-slate-400">
             <span>Playlists</span>
             <Plus
@@ -86,7 +88,15 @@ export function Sidebar({
               title="Create Playlist"
             />
           </div>
-          <ul className="nav-menu">
+
+          <PlaylistCombobox
+            playlists={playlists}
+            activePlaylistId={activePlaylistId}
+            onSelectPlaylist={(id, name) => onSelectView('playlist', id, name)}
+            onCreatePlaylist={onCreatePlaylist}
+          />
+
+          <ul className="nav-menu mt-1">
             {playlists.map((pl) => (
               <li
                 key={pl.id}
