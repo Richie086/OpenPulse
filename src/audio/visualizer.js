@@ -1,9 +1,9 @@
 // Audio Visualizer Canvas Renderer powered by Web Audio API AnalyserNode
 
 export class AudioVisualizer {
-  constructor(canvas, analyser) {
+  constructor(canvas = null, analyser = null) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    this.ctx = canvas ? canvas.getContext('2d') : null;
     this.analyser = analyser;
 
     this.mode = 'bars'; // 'bars' | 'waveform' | 'radial' | 'particles'
@@ -11,9 +11,25 @@ export class AudioVisualizer {
 
     this.particles = [];
     this.initParticles();
-    this.resize();
+    if (this.canvas) {
+      this.resize();
+    }
 
     window.addEventListener('resize', () => this.resize());
+  }
+
+  initCanvas(canvas) {
+    if (!canvas) return;
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.resize();
+    this.start();
+  }
+
+  connectAudioEngine(audioEngine) {
+    if (audioEngine && audioEngine.analyser) {
+      this.analyser = audioEngine.analyser;
+    }
   }
 
   setMode(mode) {
@@ -21,8 +37,9 @@ export class AudioVisualizer {
   }
 
   resize() {
-    if (!this.canvas) return;
+    if (!this.canvas || !this.ctx) return;
     const rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
     this.canvas.width = rect.width * (window.devicePixelRatio || 1);
     this.canvas.height = rect.height * (window.devicePixelRatio || 1);
     this.ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
@@ -32,7 +49,7 @@ export class AudioVisualizer {
     this.particles = [];
     for (let i = 0; i < 70; i++) {
       this.particles.push({
-        x: Math.random() * window.innerWidth,
+        x: Math.random() * (window.innerWidth || 800),
         y: Math.random() * 300,
         radius: Math.random() * 3 + 1,
         speedX: (Math.random() - 0.5) * 1.5,
@@ -60,8 +77,12 @@ export class AudioVisualizer {
   }
 
   draw() {
+    if (!this.canvas || !this.ctx) return;
+
     const width = this.canvas.width / (window.devicePixelRatio || 1);
     const height = this.canvas.height / (window.devicePixelRatio || 1);
+
+    if (width === 0 || height === 0) return;
 
     this.ctx.clearRect(0, 0, width, height);
 
@@ -77,7 +98,6 @@ export class AudioVisualizer {
     this.analyser.getByteFrequencyData(freqData);
     this.analyser.getByteTimeDomainData(timeData);
 
-    // Dynamic HSL colors based on active CSS custom properties
     const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6366f1';
     const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#06b6d4';
 
@@ -100,13 +120,15 @@ export class AudioVisualizer {
   }
 
   drawIdleState(width, height) {
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    if (!this.ctx) return;
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
     this.ctx.font = '14px sans-serif';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText('Audio Visualizer Ready', width / 2, height / 2);
+    this.ctx.fillText('Audio Visualizer Ready - Play a Track to Begin', width / 2, height / 2);
   }
 
   drawBars(freqData, width, height, primary, accent) {
+    if (!this.ctx) return;
     const barCount = 48;
     const barWidth = (width / barCount) - 3;
     const step = Math.floor(freqData.length / barCount);
@@ -132,6 +154,7 @@ export class AudioVisualizer {
   }
 
   drawWaveform(timeData, width, height, color) {
+    if (!this.ctx) return;
     this.ctx.lineWidth = 3;
     this.ctx.strokeStyle = color;
     this.ctx.shadowColor = color;
@@ -159,6 +182,7 @@ export class AudioVisualizer {
   }
 
   drawRadial(freqData, width, height, primary, accent) {
+    if (!this.ctx) return;
     const centerX = width / 2;
     const centerY = height / 2;
     const baseRadius = Math.min(width, height) * 0.25;
@@ -168,7 +192,6 @@ export class AudioVisualizer {
     const avgBass = sum / 30;
     const pulseRadius = baseRadius + (avgBass / 255) * 25;
 
-    // Glowing core ring
     this.ctx.beginPath();
     this.ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
     this.ctx.strokeStyle = primary;
@@ -199,6 +222,7 @@ export class AudioVisualizer {
   }
 
   drawParticles(freqData, width, height, primary, accent) {
+    if (!this.ctx) return;
     let sum = 0;
     for (let i = 0; i < 40; i++) sum += freqData[i];
     const bassLevel = sum / 40 / 255;
