@@ -9,6 +9,8 @@ import { SkinStudioDrawer } from '@/components/SkinStudioDrawer';
 import { AddMusicModal } from '@/components/AddMusicModal';
 import { SubsonicModal } from '@/components/SubsonicModal';
 import { LyricsDrawer } from '@/components/LyricsDrawer';
+import { ShortcutModal } from '@/components/ShortcutModal';
+import { DashboardView } from '@/components/DashboardView';
 
 import { AudioEngine } from '@/audio/audioEngine';
 import { AudioVisualizer as VisualizerEngine } from '@/audio/visualizer';
@@ -17,6 +19,7 @@ import { parseAudioMetadata } from '@/utils/tagParser';
 import { themeEngine } from '@/utils/themeEngine';
 import { sampleTracks } from '@/utils/sampleAudio';
 import { exportM3U } from '@/ui/playlistManager';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Play, Shuffle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -36,10 +39,10 @@ export function App() {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
-  const [visMode, setVisMode] = useState('bars');
+  const [visMode, setVisMode] = useState('mesh');
   const [currentTheme, setCurrentTheme] = useState('obsidian');
 
-  const [activeView, setActiveView] = useState('all-tracks');
+  const [activeView, setActiveView] = useState('dashboard');
   const [activePlaylistId, setActivePlaylistId] = useState(null);
   const [activePlaylistName, setActivePlaylistName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,8 +52,21 @@ export function App() {
   const [isIngestOpen, setIsIngestOpen] = useState(false);
   const [isSubsonicOpen, setIsSubsonicOpen] = useState(false);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [eqGains, setEqGains] = useState(Array(10).fill(0));
   const [activePreset, setActivePreset] = useState('flat');
+
+  // Register Keyboard Shortcuts
+  useKeyboardShortcuts({
+    onTogglePlay: () => handleTogglePlay(),
+    onNext: () => handleNextTrack(),
+    onPrev: () => handlePrevTrack(),
+    onVolumeUp: () => handleVolumeChange(Math.min(1, volume + 0.1)),
+    onVolumeDown: () => handleVolumeChange(Math.max(0, volume - 0.1)),
+    onToggleMute: () => handleToggleMute(),
+    onToggleEQ: () => setIsEQOpen((prev) => !prev),
+    onToggleLyrics: () => setIsLyricsOpen((prev) => !prev)
+  });
 
   // Initialize DB & Visualizer
   useEffect(() => {
@@ -284,6 +300,7 @@ export function App() {
         onToggleLyrics={() => setIsLyricsOpen(!isLyricsOpen)}
         onToggleEQ={() => setIsEQOpen(!isEQOpen)}
         onToggleSkinStudio={() => setIsSkinOpen(!isSkinOpen)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       <div className="main-container">
@@ -299,53 +316,73 @@ export function App() {
           onCreatePlaylist={handleCreatePlaylist}
         />
 
-        <main className="content-area">
-          <AudioVisualizer
-            visualizer={visualizer}
-            visMode={visMode}
-            onChangeMode={(mode) => {
-              setVisMode(mode);
-              visualizer.setMode(mode);
-            }}
-          />
-
-          <div className="view-header">
-            <div className="view-title-group">
-              <h1>{activeView === 'playlist' ? activePlaylistName : activeView.replace('-', ' ').toUpperCase()}</h1>
-              <p className="view-subtitle">{displayedTracks.length} tracks in view</p>
-            </div>
-            <div className="header-actions">
-              <Button onClick={() => displayedTracks.length > 0 && handlePlayTrack(displayedTracks[0])} className="btn gap-2">
-                <Play className="w-4 h-4 fill-white" />
-                <span>Play All</span>
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsShuffle(true);
-                  if (displayedTracks.length > 0) {
-                    const rand = Math.floor(Math.random() * displayedTracks.length);
-                    handlePlayTrack(displayedTracks[rand]);
-                  }
+        <main className="content-area overflow-hidden flex flex-col">
+          {activeView === 'dashboard' ? (
+            <DashboardView
+              visualizer={visualizer}
+              visMode={visMode}
+              onChangeVisMode={(mode) => {
+                setVisMode(mode);
+                visualizer.setMode(mode);
+              }}
+              tracks={tracks}
+              currentTrack={currentTrack}
+              isPlaying={isPlaying}
+              currentTime={currentTime}
+              duration={duration}
+              onPlayTrack={handlePlayTrack}
+              onSeek={handleSeek}
+            />
+          ) : (
+            <div className="p-6 flex flex-col h-full overflow-y-auto">
+              <AudioVisualizer
+                visualizer={visualizer}
+                visMode={visMode}
+                onChangeMode={(mode) => {
+                  setVisMode(mode);
+                  visualizer.setMode(mode);
                 }}
-                className="btn gap-2"
-              >
-                <Shuffle className="w-4 h-4" />
-                <span>Shuffle</span>
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleExportM3U} title="Export M3U Playlist" className="btn-icon">
-                <Download className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+              />
 
-          <TrackList
-            tracks={displayedTracks}
-            currentTrackId={currentTrack?.id}
-            isPlaying={isPlaying}
-            onPlayTrack={handlePlayTrack}
-            onToggleFavorite={handleToggleFavorite}
-            onDeleteTrack={handleDeleteTrack}
-          />
+              <div className="view-header">
+                <div className="view-title-group">
+                  <h1>{activeView === 'playlist' ? activePlaylistName : activeView.replace('-', ' ').toUpperCase()}</h1>
+                  <p className="view-subtitle">{displayedTracks.length} tracks in view</p>
+                </div>
+                <div className="header-actions">
+                  <Button onClick={() => displayedTracks.length > 0 && handlePlayTrack(displayedTracks[0])} className="btn gap-2">
+                    <Play className="w-4 h-4 fill-white" />
+                    <span>Play All</span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setIsShuffle(true);
+                      if (displayedTracks.length > 0) {
+                        const rand = Math.floor(Math.random() * displayedTracks.length);
+                        handlePlayTrack(displayedTracks[rand]);
+                      }
+                    }}
+                    className="btn gap-2"
+                  >
+                    <Shuffle className="w-4 h-4" />
+                    <span>Shuffle</span>
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={handleExportM3U} title="Export M3U Playlist" className="btn-icon">
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <TrackList
+                tracks={displayedTracks}
+                currentTrackId={currentTrack?.id}
+                isPlaying={isPlaying}
+                onPlayTrack={handlePlayTrack}
+                onToggleFavorite={handleToggleFavorite}
+                onDeleteTrack={handleDeleteTrack}
+              />
+            </div>
+          )}
         </main>
       </div>
 
@@ -406,6 +443,11 @@ export function App() {
         onClose={() => setIsLyricsOpen(false)}
         currentTrack={currentTrack}
         currentTime={currentTime}
+      />
+
+      <ShortcutModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </div>
   );

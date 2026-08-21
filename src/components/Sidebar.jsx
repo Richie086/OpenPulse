@@ -1,6 +1,8 @@
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
-import { Music, Heart, Disc, Cloud, Plus, ListMusic, Server } from 'lucide-react';
+import { LayoutDashboard, Music, Server, Settings, FileText, Plus, ListMusic } from 'lucide-react';
+import { SystemStatusCard } from '@/components/SystemStatusCard';
+import { PlaylistCombobox } from '@/components/PlaylistCombobox';
 
 export function Sidebar({
   activeView,
@@ -10,72 +12,106 @@ export function Sidebar({
   onCreatePlaylist
 }) {
   return (
-    <aside className="sidebar">
-      <div>
-        <div className="nav-section-title">Library</div>
-        <ul className="nav-menu">
-          <li
-            className={`nav-item ${activeView === 'all-tracks' ? 'active' : ''}`}
-            onClick={() => onSelectView('all-tracks')}
-          >
-            <Music />
-            <span>All Tracks</span>
-          </li>
-          <li
-            className={`nav-item ${activeView === 'favorites' ? 'active' : ''}`}
-            onClick={() => onSelectView('favorites')}
-          >
-            <Heart />
-            <span>Favorites</span>
-          </li>
-          <li
-            className={`nav-item ${activeView === 'albums' ? 'active' : ''}`}
-            onClick={() => onSelectView('albums')}
-          >
-            <Disc />
-            <span>Albums</span>
-          </li>
-          <li
-            className={`nav-item ${activeView === 'cloud' ? 'active' : ''}`}
-            onClick={() => onSelectView('cloud')}
-          >
-            <Cloud />
-            <span>Cloud Streams</span>
-          </li>
-        </ul>
-      </div>
-
-      <Separator className="my-2 bg-white/10" />
-
-      <div>
-        <div className="nav-section-title flex justify-between items-center">
-          <span>Playlists</span>
-          <Plus
-            className="w-4 h-4 cursor-pointer hover:text-white transition-colors"
-            onClick={onCreatePlaylist}
-            title="Create Playlist"
-          />
-        </div>
-        <ul className="nav-menu">
-          {playlists.map((pl) => (
+    <aside className="sidebar flex flex-col justify-between h-full">
+      <div className="flex flex-col gap-5">
+        <div>
+          <ul className="nav-menu">
             <li
-              key={pl.id}
-              className={`nav-item ${activeView === 'playlist' && activePlaylistId === pl.id ? 'active' : ''}`}
-              onClick={() => onSelectView('playlist', pl.id, pl.name)}
+              className={`nav-item ${activeView === 'dashboard' ? 'active' : ''}`}
+              onClick={() => onSelectView('dashboard')}
             >
-              <ListMusic />
-              <span className="truncate">{pl.name}</span>
+              <LayoutDashboard />
+              <span>Dashboard</span>
             </li>
-          ))}
-        </ul>
-      </div>
+            <li
+              className={`nav-item ${activeView === 'all-tracks' ? 'active' : ''}`}
+              onClick={() => onSelectView('all-tracks')}
+            >
+              <Music />
+              <span>Music Library</span>
+            </li>
+            <li
+              className={`nav-item ${activeView === 'status' ? 'active' : ''}`}
+              onClick={() => onSelectView('status')}
+            >
+              <Server />
+              <span>Server Status</span>
+            </li>
+            <li
+              className={`nav-item ${activeView === 'settings' ? 'active' : ''}`}
+              onClick={() => onSelectView('settings')}
+            >
+              <Settings />
+              <span>Settings</span>
+            </li>
+            <li
+              className={`nav-item ${activeView === 'docs' ? 'active' : ''}`}
+              onClick={() => onSelectView('docs')}
+            >
+              <FileText />
+              <span>Documentation</span>
+            </li>
+          </ul>
+        </div>
 
-      <div className="mt-auto pt-3 border-t border-white/10">
-        <div className="nav-item">
-          <Server />
-          <span>Self-Hosting Ready</span>
+        <Separator className="bg-white/10" />
+
+        {/* Technical Specs Callout Bullet List */}
+        <div className="px-2 text-[11px] text-slate-400 space-y-2">
+          <div className="flex items-start gap-1.5">
+            <span className="text-cyan-400 font-bold">•</span>
+            <span>Single Docker Container: lightweight audio visualizer</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-cyan-400 font-bold">•</span>
+            <span>Embedded SQLite / IndexedDB: Lossless FLAC/AAC Streaming</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-cyan-400 font-bold">•</span>
+            <span>High-End Native WebGL UI: DSP Filters via WASM</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-cyan-400 font-bold">•</span>
+            <span>Decentralized Multi-Node Sync</span>
+          </div>
+        </div>
+
+        <Separator className="bg-white/10" />
+
+        {/* Playlist Section with Shadcn Combobox */}
+        <div className="flex flex-col gap-3">
+          <div className="nav-section-title flex justify-between items-center text-[10px] uppercase font-bold text-slate-400">
+            <span>Playlists</span>
+            <Plus
+              className="w-3.5 h-3.5 cursor-pointer hover:text-white transition-colors"
+              onClick={onCreatePlaylist}
+              title="Create Playlist"
+            />
+          </div>
+
+          <PlaylistCombobox
+            playlists={playlists}
+            activePlaylistId={activePlaylistId}
+            onSelectPlaylist={(id, name) => onSelectView('playlist', id, name)}
+            onCreatePlaylist={onCreatePlaylist}
+          />
+
+          <ul className="nav-menu mt-1">
+            {playlists.map((pl) => (
+              <li
+                key={pl.id}
+                className={`nav-item ${activeView === 'playlist' && activePlaylistId === pl.id ? 'active' : ''}`}
+                onClick={() => onSelectView('playlist', pl.id, pl.name)}
+              >
+                <ListMusic />
+                <span className="truncate">{pl.name}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
+
+      <SystemStatusCard />
     </aside>
   );
 }
