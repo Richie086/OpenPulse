@@ -1,6 +1,6 @@
 import React from 'react';
 import { AudioVisualizer } from '@/components/AudioVisualizer';
-import { Play, Sparkles, Terminal, Code, ShieldCheck } from 'lucide-react';
+import { Play, Sparkles, Terminal, Code, ShieldCheck, Activity, Cpu, Sliders, Server, Zap, Radio } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export function DashboardView({
@@ -23,6 +23,13 @@ export function DashboardView({
     { title: 'Elementic Flats', type: 'Album', gradient: 'from-emerald-800 to-blue-600' }
   ];
 
+  const features = [
+    { icon: Activity, title: 'WebGL 3D Visualizers', desc: 'Morphing wireframe mesh & real-time spectrum analysis.' },
+    { icon: Sliders, title: '10-Band Graphic EQ', desc: 'Biquad filter DSP processing with custom genre presets.' },
+    { icon: Server, title: 'Subsonic API Sync', desc: 'Connect to Navidrome & Airsonic self-hosted servers.' },
+    { icon: Zap, title: 'Zero-Latency Seek', desc: 'Instant local IndexedDB storage & WASM audio streaming.' }
+  ];
+
   const dockerYaml = `1 docker-compose.yml
 2 
 3 services:
@@ -42,7 +49,8 @@ export function DashboardView({
   const jsonConfig = `{
   "server": "online",
   "audio": {
-    "wasmDSP": true
+    "wasmDSP": true,
+    "sampleRate": 48000
   },
   "ui": {
     "theme": "cyber-glass"
@@ -53,21 +61,47 @@ export function DashboardView({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-y-auto">
       {/* Left / Center Main Section (8 cols) */}
       <div className="lg:col-span-8 flex flex-col gap-6">
-        {/* Top Header Summary Callout */}
-        <Card className="bg-white/5 border-white/10 backdrop-blur-md">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold tracking-tight">DASHBOARD</h1>
+        
+        {/* LANDING PAGE INTRODUCTION HERO CARD */}
+        <Card className="bg-gradient-to-r from-slate-900/90 via-slate-950/95 to-indigo-950/90 border-cyan-500/30 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <CardHeader className="p-6 pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-cyan-500/30">
+                Self-Hosted Audio Workstation
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
+                v1.2.0 Active Node
+              </span>
             </div>
-            <div className="flex items-center gap-6 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span>Single Docker Container: <strong>single source audio</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Lossless FLAC/AAC Streaming</span>
-              </div>
+            
+            <CardTitle className="text-2xl font-black tracking-tight text-white">
+              Welcome to <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-400 bg-clip-text text-transparent">OpenPulse</span>
+            </CardTitle>
+            
+            <CardDescription className="text-xs text-slate-300 leading-relaxed mt-1">
+              OpenPulse is a high-fidelity, containerized web audio player and DSP processing workstation.
+              Built for self-hosters and audiophiles, it delivers real-time 3D WebGL visualizations, zero-latency local caching, 
+              10-band equalizer filters, and seamless Subsonic / Navidrome library synchronization.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="p-6 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+              {features.map((feat, idx) => {
+                const IconComponent = feat.icon;
+                return (
+                  <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-md flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-cyan-400">
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-bold text-xs text-white">{feat.title}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-snug">{feat.desc}</p>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -76,9 +110,9 @@ export function DashboardView({
         <Card className="bg-slate-950/80 border-cyan-500/20 shadow-2xl relative overflow-hidden backdrop-blur-xl">
           <CardHeader className="p-5 pb-2 flex flex-row justify-between items-start">
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">OPENPULSE VISUALIZER</div>
-              <CardTitle className="text-lg font-extrabold text-white">WebGL & WASM Streaming</CardTitle>
-              <CardDescription className="text-xs text-slate-400">High-end frequency 3D wireframe visualizer</CardDescription>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">OPENPULSE VISUALIZER STAGE</div>
+              <CardTitle className="text-lg font-extrabold text-white">WebGL & WASM Frequency Stage</CardTitle>
+              <CardDescription className="text-xs text-slate-400">Real-time multi-layered 3D wireframe mesh wave generator</CardDescription>
             </div>
             <div className="text-right">
               <span className="text-xs font-semibold text-purple-400">Morphing wave in real-time</span>
