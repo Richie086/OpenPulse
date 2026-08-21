@@ -8,6 +8,7 @@ import { EqualizerDrawer } from '@/components/EqualizerDrawer';
 import { SkinStudioDrawer } from '@/components/SkinStudioDrawer';
 import { AddMusicModal } from '@/components/AddMusicModal';
 import { SubsonicModal } from '@/components/SubsonicModal';
+import { LyricsDrawer } from '@/components/LyricsDrawer';
 
 import { AudioEngine } from '@/audio/audioEngine';
 import { AudioVisualizer as VisualizerEngine } from '@/audio/visualizer';
@@ -47,6 +48,7 @@ export function App() {
   const [isSkinOpen, setIsSkinOpen] = useState(false);
   const [isIngestOpen, setIsIngestOpen] = useState(false);
   const [isSubsonicOpen, setIsSubsonicOpen] = useState(false);
+  const [isLyricsOpen, setIsLyricsOpen] = useState(false);
   const [eqGains, setEqGains] = useState(Array(10).fill(0));
   const [activePreset, setActivePreset] = useState('flat');
 
@@ -279,6 +281,7 @@ export function App() {
         onSearchChange={setSearchQuery}
         onOpenIngest={() => setIsIngestOpen(true)}
         onOpenSubsonic={() => setIsSubsonicOpen(true)}
+        onToggleLyrics={() => setIsLyricsOpen(!isLyricsOpen)}
         onToggleEQ={() => setIsEQOpen(!isEQOpen)}
         onToggleSkinStudio={() => setIsSkinOpen(!isSkinOpen)}
       />
@@ -396,6 +399,13 @@ export function App() {
         isOpen={isSubsonicOpen}
         onClose={() => setIsSubsonicOpen(false)}
         onSyncSongs={handleSyncSubsonicSongs}
+      />
+
+      <LyricsDrawer
+        isOpen={isLyricsOpen}
+        onClose={() => setIsLyricsOpen(false)}
+        currentTrack={currentTrack}
+        currentTime={currentTime}
       />
     </div>
   );
